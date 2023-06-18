@@ -124,7 +124,7 @@ Riffusion contains a [streamlit](https://streamlit.io/) app for interactive use 
 
 Run with:
 ```
-python -m riffusion.streamlit.playground
+python -m streamlit run riffusion/streamlit/playground.py --browser.serverAddress 127.0.0.1 --browser.serverPort 8501
 ```
 
 And access at http://127.0.0.1:8501/
@@ -205,7 +205,7 @@ To run tests using a specific torch device, set `RIFFUSION_TEST_DEVICE`. Tests s
 `cpu`, `cuda`, and `mps` backends.
 
 ## Development Guide
-Install additional packages for dev with `python -m pip install -r requirements_dev.txt`.
+Install additional packages for dev with `python -m pip install -r dev_requirements.txt`.
 
 * Linter: `ruff`
 * Formatter: `black`

@@ -1,3 +1,7 @@
+[project]
+name = "riffusion"
+version = "1.0.0"
+
 [tool.black]
 line-length = 100
 
@@ -67,10 +71,6 @@ module = "diffusers.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = "huggingface_hub.*"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
 module = "numpy.*"
 ignore_missing_imports = true
 
@@ -97,3 +97,7 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "transformers.*"
 ignore_missing_imports = true
+
+[tool.setuptools]
+py-modules = ["riffusion"]
+

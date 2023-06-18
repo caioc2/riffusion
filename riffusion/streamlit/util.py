@@ -16,6 +16,8 @@ from riffusion.riffusion_pipeline import RiffusionPipeline
 from riffusion.spectrogram_image_converter import SpectrogramImageConverter
 from riffusion.spectrogram_params import SpectrogramParams
 
+
+from lucidsonicdreams import LucidSonicDream
 # TODO(hayk): Add URL params
 
 DEFAULT_CHECKPOINT = "riffusion/riffusion-model-v1"
@@ -145,7 +147,7 @@ def load_stable_diffusion_img2img_pipeline(
     return pipeline
 
 
-@st.cache_data(persist=True)
+@st.cache_resource
 def run_txt2img(
     prompt: str,
     num_inference_steps: int,
@@ -202,7 +204,7 @@ def spectrogram_image_from_audio(
     return converter.spectrogram_image_from_audio(segment)
 
 
-@st.cache_data
+@st.cache_resource
 def audio_segment_from_spectrogram_image(
     image: Image.Image,
     params: SpectrogramParams,
@@ -212,7 +214,7 @@ def audio_segment_from_spectrogram_image(
     return converter.audio_from_spectrogram_image(image)
 
 
-@st.cache_data
+@st.cache_resource
 def audio_bytes_from_spectrogram_image(
     image: Image.Image,
     params: SpectrogramParams,
@@ -281,14 +283,15 @@ def select_checkpoint(container: T.Any = st.sidebar) -> str:
     """
     Provide a custom model checkpoint.
     """
-    return container.text_input(
+    custom_checkpoint = container.text_input(
         "Custom Checkpoint",
-        value=DEFAULT_CHECKPOINT,
+        value="",
         help="Provide a custom model checkpoint",
     )
+    return custom_checkpoint or DEFAULT_CHECKPOINT
 
 
-@st.cache_data
+@st.cache_resource
 def load_audio_file(audio_file: io.BytesIO) -> pydub.AudioSegment:
     return pydub.AudioSegment.from_file(audio_file)
 
@@ -415,6 +418,27 @@ class StreamlitCounter:
 
 
 def display_and_download_audio(
+    segment: pydub.AudioSegment,
+    name: str,
+    extension: str = "mp3",
+) -> None:
+    """
+    Display the given audio segment and provide a button to download it with
+    a proper file name, since st.audio doesn't support that.
+    """
+    mime_type = f"audio/{extension}"
+    audio_bytes = io.BytesIO()
+    segment.export(audio_bytes, format=extension)
+    st.audio(audio_bytes, format=mime_type)
+
+    st.download_button(
+        f"{name}.{extension}",
+        data=audio_bytes,
+        file_name=f"{name}.{extension}",
+        mime=mime_type,
+    )
+    
+def display_and_download_video(
     segment: pydub.AudioSegment,
     name: str,
     extension: str = "mp3",
